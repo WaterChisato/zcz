@@ -67,9 +67,16 @@
     <div id="list"></div>
   </div>
 
-  <script>
-    async function loadList() {
+<script>
+  async function loadList() {
+    try {
       const res = await fetch('renyuan.json');
+
+      // 如果服务器返回非 200 状态，也算错误
+      if (!res.ok) {
+        throw new Error('无法加载 renyuan.json，服务器返回状态：' + res.status);
+      }
+
       const data = await res.json();
       const listDiv = document.getElementById('list');
       listDiv.innerHTML = '';
@@ -80,14 +87,30 @@
         div.innerHTML = `<div class="name">${item.name}</div><div class="support">（${item.support}）</div>`;
         listDiv.appendChild(div);
       });
+
+    } catch (err) {
+      console.error('加载列表时发生错误：', err);
+
+      // 在页面上显示错误提示
+      document.getElementById('list').innerHTML =
+        `<div style="color:red;">❌ 无法加载数据，请检查 renyuan.json 是否存在。</div>`;
     }
+  }
 
-    document.getElementById('searchBox').addEventListener('input', async function() {
-      const keyword = this.value.toLowerCase();
+  document.getElementById('searchBox').addEventListener('input', async function() {
+    const keyword = this.value.toLowerCase();
+
+    try {
       const res = await fetch('renyuan.json');
-      const data = await res.json();
+      if (!res.ok) {
+        throw new Error('无法加载 renyuan.json，服务器返回状态：' + res.status);
+      }
 
-      const filtered = data.filter(item => item.name.toLowerCase().includes(keyword));
+      const data = await res.json();
+      const filtered = data.filter(item =>
+        item.name.toLowerCase().includes(keyword)
+      );
+
       const listDiv = document.getElementById('list');
       listDiv.innerHTML = '';
 
@@ -97,9 +120,15 @@
         div.innerHTML = `<div class="name">${item.name}</div><div class="support">（${item.support}）</div>`;
         listDiv.appendChild(div);
       });
-    });
 
-    loadList();
-  </script>
+    } catch (err) {
+      console.error('搜索时发生错误：', err);
+      document.getElementById('list').innerHTML =
+        `<div style="color:red;">❌ 搜索失败，无法读取 renyuan.json。</div>`;
+    }
+  });
+
+  loadList();
+</script>
 </body>
 </html>
