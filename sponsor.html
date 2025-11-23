@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>水喝千束的赞助页面</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ffb8e6, #8fc7ff);
+      color: #333;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 25px;
+      border-radius: 16px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    #searchBox {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #aaa;
+      margin-bottom: 20px;
+    }
+
+    .item {
+      background: white;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .name {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .support {
+      margin-top: 4px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>水喝千束的赞助页面</h1>
+
+    <input type="text" id="searchBox" placeholder="搜索赞助者..." />
+
+    <div id="list"></div>
+  </div>
+
+  <script>
+    async function loadList() {
+      const res = await fetch('renyuan.json');
+      const data = await res.json();
+      const listDiv = document.getElementById('list');
+      listDiv.innerHTML = '';
+
+      data.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `<div class="name">${item.name}</div><div class="support">（${item.support}）</div>`;
+        listDiv.appendChild(div);
+      });
+    }
+
+    document.getElementById('searchBox').addEventListener('input', async function() {
+      const keyword = this.value.toLowerCase();
+      const res = await fetch('renyuan.json');
+      const data = await res.json();
+
+      const filtered = data.filter(item => item.name.toLowerCase().includes(keyword));
+      const listDiv = document.getElementById('list');
+      listDiv.innerHTML = '';
+
+      filtered.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `<div class="name">${item.name}</div><div class="support">（${item.support}）</div>`;
+        listDiv.appendChild(div);
+      });
+    });
+
+    loadList();
+  </script>
+</body>
+</html>
