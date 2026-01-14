@@ -64,6 +64,108 @@
 
     <input type="text" id="searchBox" placeholder="搜索赞助者..." />
 
+    <p style="text-align:center; margin: 10px 0 18px;">
+      <a href="https://help.waterchisato.top/?post=5" 
+         target="_blank" 
+         style="color:#0066cc; font-weight:bold; text-decoration:none;">
+        如何进入赞助支持列表，请点击这里
+      </a>
+    </p>
+
+    <div id="list"></div>
+  </div>
+
+<script>
+  async function loadList() {
+    try {
+      const res = await fetch('renyuan.json');
+
+      if (!res.ok) {
+        throw new Error('无法加载 renyuan.json，服务器返回状态：' + res.status);
+      }
+
+      const data = await res.json();
+      const listDiv = document.getElementById('list');
+      listDiv.innerHTML = '';
+
+      data.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `<div class="name">${item.name}</div><div class="support">（${item.support}）</div>`;
+        listDiv.appendChild(div);
+      });
+
+    } catch (err) {
+      console.error('加载列表时发生错误：', err);
+      document.getElementById('list').innerHTML =
+        `<div style="color:red;">❌ 无法加载数据，请检查 renyuan.json 是否存在。</div>`;
+    }
+  }
+
+  document.getElementById('searchBox').addEventListener('input', async function() {
+    const keyword = this.value.toLowerCase();
+
+    try {
+      const res = await fetch('renyuan.json');
+      if (!res.ok) {
+        throw new Error('无法加载 renyuan.json，服务器返回状态：' + res.status);
+      }
+
+      const data = await res.json();
+      const filtered = data.filter(item =>
+        item.name.toLowerCase().includes(keyword)
+      );
+
+      const listDiv = document.getElementById('list');
+      listDiv.innerHTML = '';
+
+      filtered.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `<div class="name">${item.name}</div><div class="support">（${item.support}）</div>`;
+        listDiv.appendChild(div);
+      });
+
+    } catch (err) {
+      console.error('搜索时发生错误：', err);
+      document.getElementById('list').innerHTML =
+        `<div style="color:red;">❌ 搜索失败，无法读取 renyuan.json。</div>`;
+    }
+  });
+
+  loadList();
+</script>
+</body>
+</html>      border-radius: 10px;
+      border: 1px solid #aaa;
+      margin-bottom: 20px;
+    }
+
+    .item {
+      background: white;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .name {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .support {
+      margin-top: 4px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>水喝千束的支持者页</h1>
+
+    <input type="text" id="searchBox" placeholder="搜索赞助者..." />
+
     <div id="list"></div>
   </div>
 
